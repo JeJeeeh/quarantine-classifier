@@ -20,7 +20,7 @@ class AvailableHospitalBed(Fact):
 class QuarantineClassifier(KnowledgeEngine):
     # death rate = death / confirmed * 100%
     # death rate = 0% [0]
-    @Rule(OR(
+    @Rule(AND(
         Cases(deathRate=0),
         Cases(healedRate=90)
     ))
@@ -28,7 +28,7 @@ class QuarantineClassifier(KnowledgeEngine):
         print("Quarantine Level 0")
 
     # death rate <= 10% [1]
-    @Rule(OR(
+    @Rule(AND(
         Cases(deathRate=10),
         Cases(healedRate=80)
     ))
@@ -36,17 +36,26 @@ class QuarantineClassifier(KnowledgeEngine):
         print("Quarantine Level 1")
 
     # death rate <= 20% [2]
-    @Rule(Cases(deathRate=20))
+    @Rule(AND(
+        Cases(deathRate=20),
+        Cases(healedRate=70)
+    ))
     def level2(self):
         print("Quarantine Level 2")
 
     # death rate <= 40% [3]
-    @Rule(Cases(deathRate=40))
+    @Rule(AND(
+        Cases(deathRate=40),
+        Cases(healedRate=50)
+    ))
     def level3(self):
         print("Quarantine Level 3")
 
     # death rate > 40% [4]
-    @Rule(Cases(deathRate=100))
+    @Rule(AND(
+        Cases(deathRate=100),
+        Cases(healedRate=0)
+    ))
     def level4(self):
         print("Quarantine Level 4")
 
@@ -66,7 +75,7 @@ def scaleDeathRate(death_cases, _cases):
 
     # scaling death rate to fulfil conditions
     if defDeathRate <= 5:
-        defDeathRate = 5
+        defDeathRate = 0
     elif defDeathRate <= 10:
         defDeathRate = 10
     elif defDeathRate <= 20:
